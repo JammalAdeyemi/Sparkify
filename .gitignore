@@ -1,0 +1,19 @@
+/airflow_home/
+# Airflow
+airflow_home/
+*.db
+*.pid
+*.cfg
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Env
+.env
+airflow_venv/
+
+# VSCode / system
+.vscode/
+.DS_Store

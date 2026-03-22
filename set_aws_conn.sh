@@ -11,11 +11,10 @@ airflow connections delete redshift 1>/dev/null || true
 airflow variables delete s3_bucket 1>/dev/null || true
 airflow variables delete s3_prefix 1>/dev/null || true
 
-# Create connection using URI
+# Create AWS connection using URI
 airflow connections add aws_credentials \
     --conn-uri "aws://${AWS_ACCESS_KEY_ID}:${AWS_SECRET_ACCESS_KEY}@"
 
-# Create Redshift connection using URI
 # Create Redshift connection using URI
 airflow connections add redshift \
     --conn-uri "redshift://${REDSHIFT_USER}:${REDSHIFT_PASSWORD}@${REDSHIFT_HOST}:${REDSHIFT_PORT}/${REDSHIFT_DB}"
