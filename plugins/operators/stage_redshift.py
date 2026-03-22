@@ -25,7 +25,7 @@ class StageToRedshiftOperator(BaseOperator):
                  s3_bucket='',
                  s3_key='',
                  json_path='auto',
-                 region='us-west-2',
+                 region='us-east-1',
                  *args, **kwargs):
         super(StageToRedshiftOperator, self).__init__(*args, **kwargs)
         self.redshift_conn_id = redshift_conn_id
@@ -42,7 +42,7 @@ class StageToRedshiftOperator(BaseOperator):
         redshift = PostgresHook(postgres_conn_id=self.redshift_conn_id)
 
         self.log.info('Clearing data from destination table %s', self.table)
-        redshift.run('DELETE FROM {}'.format(self.table))
+        redshift.run(f'TRUNCATE TABLE {self.table}')
 
         formatted_sql = StageToRedshiftOperator.copy_sql.format(
             table=self.table,
