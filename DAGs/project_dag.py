@@ -1,12 +1,20 @@
 from datetime import datetime, timedelta
 
 from airflow import DAG
+from airflow.models import Variable
 from airflow.operators.empty import EmptyOperator
+from airflow.providers.common.sql.operators.sql import SQLExecuteQueryOperator
 from plugins.operators.stage_redshift import StageToRedshiftOperator
 from plugins.operators.load_fact import LoadFactOperator
 from plugins.operators.load_dimension import LoadDimensionOperator
 from plugins.operators.data_quality import DataQualityOperator
 from plugins.helpers.sql_queries import SqlQueries
+
+
+S3_BUCKET = Variable.get('s3_bucket', default_var='jammal-s3')
+S3_LOG_DATA = Variable.get('s3_log_data', default_var='log-data')
+S3_SONG_DATA = Variable.get('s3_song_data', default_var='song-data')
+S3_LOG_JSON = Variable.get('s3_log_json', default_var='log_json_path.json')
 
 
 default_args = {
@@ -27,14 +35,21 @@ dag = DAG('final_project',
 
 start_operator = EmptyOperator(task_id='Begin_execution', dag=dag)
 
+create_tables = SQLExecuteQueryOperator(
+    task_id='Create_tables',
+    conn_id='redshift',
+    sql=SqlQueries.create_tables,
+    dag=dag
+)
+
 stage_events_to_redshift = StageToRedshiftOperator(
     task_id='Stage_events',
     redshift_conn_id='redshift',
     aws_credentials_id='aws_credentials',
     table='staging_events',
-    s3_bucket='jammals3',
-    s3_key='log_data/{{ execution_date.year }}/{{ execution_date.month }}',
-    json_path='s3://jammals3/log_json_path.json',
+    s3_bucket=S3_BUCKET,
+    s3_key=f"{S3_LOG_DATA}/{{{{ execution_date.year }}}}/{{{{ execution_date.month }}}}",
+    json_path=f's3://{S3_BUCKET}/{S3_LOG_JSON}',
     dag=dag
 )
 
@@ -43,8 +58,8 @@ stage_songs_to_redshift = StageToRedshiftOperator(
     redshift_conn_id='redshift',
     aws_credentials_id='aws_credentials',
     table='staging_songs',
-    s3_bucket='jammals3',
-    s3_key='song_data',
+    s3_bucket=S3_BUCKET,
+    s3_key=S3_SONG_DATA,
     json_path='auto',
     dag=dag
 )
@@ -108,7 +123,8 @@ run_quality_checks = DataQualityOperator(
 
 end_operator = EmptyOperator(task_id='Stop_execution', dag=dag)
 
-start_operator >> [stage_events_to_redshift, stage_songs_to_redshift]
+start_operator >> create_tables
+create_tables >> [stage_events_to_redshift, stage_songs_to_redshift]
 [stage_events_to_redshift, stage_songs_to_redshift] >> load_songplays_table
 load_songplays_table >> [
     load_artist_dimension_table,

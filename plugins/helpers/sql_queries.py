@@ -1,4 +1,94 @@
 class SqlQueries:
+    create_tables = [
+        """
+        CREATE TABLE IF NOT EXISTS staging_events (
+            artist VARCHAR,
+            auth VARCHAR,
+            firstname VARCHAR,
+            gender VARCHAR(1),
+            iteminsession INTEGER,
+            lastname VARCHAR,
+            length FLOAT,
+            level VARCHAR,
+            location VARCHAR,
+            method VARCHAR,
+            page VARCHAR,
+            registration FLOAT,
+            sessionid INTEGER,
+            song VARCHAR,
+            status INTEGER,
+            ts BIGINT,
+            useragent VARCHAR,
+            userid INTEGER
+        );
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS staging_songs (
+            num_songs INTEGER,
+            artist_id VARCHAR,
+            artist_latitude FLOAT,
+            artist_longitude FLOAT,
+            artist_location VARCHAR,
+            artist_name VARCHAR,
+            song_id VARCHAR,
+            title VARCHAR,
+            duration FLOAT,
+            year INTEGER
+        );
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS songplays (
+            songplay_id VARCHAR PRIMARY KEY,
+            start_time TIMESTAMP NOT NULL,
+            userid INTEGER,
+            level VARCHAR,
+            song_id VARCHAR,
+            artist_id VARCHAR,
+            sessionid INTEGER,
+            location VARCHAR,
+            useragent VARCHAR
+        );
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS users (
+            userid INTEGER PRIMARY KEY,
+            firstname VARCHAR,
+            lastname VARCHAR,
+            gender VARCHAR(1),
+            level VARCHAR
+        );
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS songs (
+            song_id VARCHAR PRIMARY KEY,
+            title VARCHAR,
+            artist_id VARCHAR,
+            year INTEGER,
+            duration FLOAT
+        );
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS artists (
+            artist_id VARCHAR PRIMARY KEY,
+            artist_name VARCHAR,
+            artist_location VARCHAR,
+            artist_latitude FLOAT,
+            artist_longitude FLOAT
+        );
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS time (
+            start_time TIMESTAMP PRIMARY KEY,
+            hour INTEGER,
+            day INTEGER,
+            week INTEGER,
+            month INTEGER,
+            year INTEGER,
+            weekday INTEGER
+        );
+        """
+    ]
+
     songplay_table_insert = ("""
         SELECT
                 md5(events.sessionid || events.start_time) songplay_id,
