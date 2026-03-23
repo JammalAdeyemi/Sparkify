@@ -14,7 +14,11 @@ class StageToRedshiftOperator(BaseOperator):
         ACCESS_KEY_ID '{aws_access_key_id}'
         SECRET_ACCESS_KEY '{aws_secret_access_key}'
         JSON '{json_path}'
-        REGION '{region}';
+        REGION '{region}'
+        TRUNCATECOLUMNS
+        BLANKSASNULL
+        EMPTYASNULL
+        ACCEPTINVCHARS;
     """
 
     @apply_defaults

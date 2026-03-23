@@ -1,83 +1,104 @@
 class SqlQueries:
     create_tables = [
         """
-        CREATE TABLE IF NOT EXISTS staging_events (
-            artist VARCHAR,
-            auth VARCHAR,
-            firstname VARCHAR,
+        DROP TABLE IF EXISTS staging_events;
+        """,
+        """
+        CREATE TABLE staging_events (
+            artist VARCHAR(65535),
+            auth VARCHAR(256),
+            firstname VARCHAR(256),
             gender VARCHAR(1),
             iteminsession INTEGER,
-            lastname VARCHAR,
+            lastname VARCHAR(256),
             length FLOAT,
-            level VARCHAR,
-            location VARCHAR,
-            method VARCHAR,
-            page VARCHAR,
+            level VARCHAR(64),
+            location VARCHAR(65535),
+            method VARCHAR(32),
+            page VARCHAR(256),
             registration FLOAT,
             sessionid INTEGER,
-            song VARCHAR,
+            song VARCHAR(65535),
             status INTEGER,
             ts BIGINT,
-            useragent VARCHAR,
+            useragent VARCHAR(65535),
             userid INTEGER
         );
         """,
         """
-        CREATE TABLE IF NOT EXISTS staging_songs (
+        DROP TABLE IF EXISTS staging_songs;
+        """,
+        """
+        CREATE TABLE staging_songs (
             num_songs INTEGER,
-            artist_id VARCHAR,
+            artist_id VARCHAR(256),
             artist_latitude FLOAT,
             artist_longitude FLOAT,
-            artist_location VARCHAR,
-            artist_name VARCHAR,
-            song_id VARCHAR,
-            title VARCHAR,
+            artist_location VARCHAR(65535),
+            artist_name VARCHAR(65535),
+            song_id VARCHAR(256),
+            title VARCHAR(65535),
             duration FLOAT,
             year INTEGER
         );
         """,
         """
-        CREATE TABLE IF NOT EXISTS songplays (
-            songplay_id VARCHAR PRIMARY KEY,
+        DROP TABLE IF EXISTS songplays;
+        """,
+        """
+        CREATE TABLE songplays (
+            songplay_id VARCHAR(32) PRIMARY KEY,
             start_time TIMESTAMP NOT NULL,
             userid INTEGER,
-            level VARCHAR,
-            song_id VARCHAR,
-            artist_id VARCHAR,
+            level VARCHAR(64),
+            song_id VARCHAR(256),
+            artist_id VARCHAR(256),
             sessionid INTEGER,
-            location VARCHAR,
-            useragent VARCHAR
+            location VARCHAR(65535),
+            useragent VARCHAR(65535)
         );
         """,
         """
-        CREATE TABLE IF NOT EXISTS users (
+        DROP TABLE IF EXISTS users;
+        """,
+        """
+        CREATE TABLE users (
             userid INTEGER PRIMARY KEY,
-            firstname VARCHAR,
-            lastname VARCHAR,
+            firstname VARCHAR(256),
+            lastname VARCHAR(256),
             gender VARCHAR(1),
-            level VARCHAR
+            level VARCHAR(64)
         );
         """,
         """
-        CREATE TABLE IF NOT EXISTS songs (
-            song_id VARCHAR PRIMARY KEY,
-            title VARCHAR,
-            artist_id VARCHAR,
+        DROP TABLE IF EXISTS songs;
+        """,
+        """
+        CREATE TABLE songs (
+            song_id VARCHAR(256) PRIMARY KEY,
+            title VARCHAR(65535),
+            artist_id VARCHAR(256),
             year INTEGER,
             duration FLOAT
         );
         """,
         """
-        CREATE TABLE IF NOT EXISTS artists (
-            artist_id VARCHAR PRIMARY KEY,
-            artist_name VARCHAR,
-            artist_location VARCHAR,
+        DROP TABLE IF EXISTS artists;
+        """,
+        """
+        CREATE TABLE artists (
+            artist_id VARCHAR(256) PRIMARY KEY,
+            artist_name VARCHAR(65535),
+            artist_location VARCHAR(65535),
             artist_latitude FLOAT,
             artist_longitude FLOAT
         );
         """,
         """
-        CREATE TABLE IF NOT EXISTS time (
+        DROP TABLE IF EXISTS time;
+        """,
+        """
+        CREATE TABLE time (
             start_time TIMESTAMP PRIMARY KEY,
             hour INTEGER,
             day INTEGER,

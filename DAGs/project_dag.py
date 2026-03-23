@@ -15,22 +15,24 @@ S3_BUCKET = Variable.get('s3_bucket', default_var='jammal-s3')
 S3_LOG_DATA = Variable.get('s3_log_data', default_var='log-data')
 S3_SONG_DATA = Variable.get('s3_song_data', default_var='song-data')
 S3_LOG_JSON = Variable.get('s3_log_json', default_var='log_json_path.json')
+S3_LOG_PREFIX = Variable.get('s3_log_prefix', default_var=f'{S3_LOG_DATA}/2018/11')
 
 
 default_args = {
     'owner': 'jammal',
     'depends_on_past': False,
-    'retries': 3,
+    'retries': 1,
     'retry_delay': timedelta(minutes=5),
     'email_on_retry': False,
-    'catchup': False,
     'start_date': datetime(2018, 11, 1)
 }
 
 dag = DAG('final_project',
           default_args=default_args,
           description='Load and transform data in Redshift with Airflow',
-          schedule_interval='0 * * * *'
+          schedule_interval='0 * * * *',
+          catchup=False,
+          max_active_runs=1
         )
 
 start_operator = EmptyOperator(task_id='Begin_execution', dag=dag)
@@ -48,7 +50,7 @@ stage_events_to_redshift = StageToRedshiftOperator(
     aws_credentials_id='aws_credentials',
     table='staging_events',
     s3_bucket=S3_BUCKET,
-    s3_key=f"{S3_LOG_DATA}/{{{{ execution_date.year }}}}/{{{{ execution_date.month }}}}",
+    s3_key=S3_LOG_PREFIX,
     json_path=f's3://{S3_BUCKET}/{S3_LOG_JSON}',
     dag=dag
 )
